@@ -9,7 +9,7 @@ export const validationSchema: Yup.ObjectSchema<FormValues> =
     lastName: Yup.string()
       .required('Last Name is required')
       .max(50, 'Last Name cannot exceed 50 characters'),
-    phoneNumber: Yup.string()
+    phone: Yup.string()
       .required('Phone Number is required')
       .matches(
         /^\+1[0-9]{10}$/,
