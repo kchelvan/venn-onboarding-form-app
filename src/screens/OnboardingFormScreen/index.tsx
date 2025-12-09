@@ -7,8 +7,13 @@ import styles from './styles';
 import TextInput from '../../components/TextInput';
 import SubmitButton from '../../components/Button';
 import { FormValues } from '../../utils/types';
+import {
+  CorporationValidationResponse,
+  useCorporationNumberValidation,
+} from '../../hooks/useCorporationValidation';
 
 const OnboardingFormScreen = () => {
+  const { validateCorporationNumber } = useCorporationNumberValidation();
   const initialValues: FormValues = {
     firstName: '',
     lastName: '',
@@ -31,47 +36,80 @@ const OnboardingFormScreen = () => {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ handleChange, handleSubmit, values, errors, touched }) => (
-              <View>
-                <View style={styles.nameInputContainer}>
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      label="First Name"
-                      onChangeText={handleChange('firstName')}
-                      value={values.firstName}
-                      error={errors.firstName}
-                      touched={touched.firstName}
-                    />
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              setFieldError,
+              values,
+              errors,
+              touched,
+            }) => {
+              const handleOnBlur = (field: keyof FormValues) => async () => {
+                handleBlur(field);
+
+                if (
+                  field === 'corporationNumber' &&
+                  !errors.corporationNumber
+                ) {
+                  const corporationDataResponse: CorporationValidationResponse =
+                    await validateCorporationNumber(values.corporationNumber);
+
+                  if (!corporationDataResponse?.valid) {
+                    setFieldError(
+                      'corporationNumber',
+                      corporationDataResponse.message,
+                    );
+                  }
+                }
+              };
+
+              return (
+                <View>
+                  <View style={styles.nameInputContainer}>
+                    <View style={{ flex: 1 }}>
+                      <TextInput
+                        label="First Name"
+                        onChangeText={handleChange('firstName')}
+                        onBlur={handleOnBlur('firstName')}
+                        value={values.firstName}
+                        error={errors.firstName}
+                        touched={touched.firstName}
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <TextInput
+                        label="Last Name"
+                        onChangeText={handleChange('lastName')}
+                        onBlur={handleOnBlur('lastName')}
+                        value={values.lastName}
+                        error={errors.lastName}
+                        touched={touched.lastName}
+                      />
+                    </View>
                   </View>
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      label="Last Name"
-                      onChangeText={handleChange('lastName')}
-                      value={values.lastName}
-                      error={errors.lastName}
-                      touched={touched.lastName}
-                    />
-                  </View>
+                  <TextInput
+                    label="Phone Number"
+                    onChangeText={handleChange('phoneNumber')}
+                    onBlur={handleOnBlur('phoneNumber')}
+                    value={values.phoneNumber}
+                    keyboardType="phone-pad"
+                    error={errors.phoneNumber}
+                    touched={touched.phoneNumber}
+                  />
+                  <TextInput
+                    label="Corporation Number"
+                    onChangeText={handleChange('corporationNumber')}
+                    onBlur={handleOnBlur('corporationNumber')}
+                    value={values.corporationNumber}
+                    keyboardType="phone-pad"
+                    error={errors.corporationNumber}
+                    touched={touched.corporationNumber}
+                  />
+                  <SubmitButton label="Submit" onPress={handleSubmit} />
                 </View>
-                <TextInput
-                  label="Phone Number"
-                  onChangeText={handleChange('phoneNumber')}
-                  value={values.phoneNumber}
-                  keyboardType="phone-pad"
-                  error={errors.phoneNumber}
-                  touched={touched.phoneNumber}
-                />
-                <TextInput
-                  label="Corporation Number"
-                  onChangeText={handleChange('corporationNumber')}
-                  value={values.corporationNumber}
-                  keyboardType="phone-pad"
-                  error={errors.corporationNumber}
-                  touched={touched.corporationNumber}
-                />
-                <SubmitButton label="Submit" onPress={handleSubmit} />
-              </View>
-            )}
+              );
+            }}
           </Formik>
         </View>
       </ScrollView>
