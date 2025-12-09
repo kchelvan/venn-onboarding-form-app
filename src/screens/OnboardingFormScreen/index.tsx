@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Formik } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
 import { validationSchema } from '../../utils/validationSchema';
 import styles from './styles';
 import TextInput from '../../components/TextInput';
@@ -11,18 +11,16 @@ import {
   CorporationValidationResponse,
   useCorporationNumberValidation,
 } from '../../hooks/useCorporationValidation';
+import { useOnboardingSubmit } from '../../hooks/useOnboardingSubmit';
 
 const OnboardingFormScreen = () => {
   const { validateCorporationNumber } = useCorporationNumberValidation();
+  const { onSubmitHandler } = useOnboardingSubmit();
   const initialValues: FormValues = {
     firstName: '',
     lastName: '',
-    phoneNumber: '',
+    phone: '',
     corporationNumber: '',
-  };
-
-  const handleSubmit = (values: FormValues) => {
-    console.log('Submitted form values:', values);
   };
 
   return (
@@ -34,19 +32,23 @@ const OnboardingFormScreen = () => {
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={handleSubmit}
+            onSubmit={onSubmitHandler}
+            validateOnChange={false}
+            validateOnBlur={true}
           >
             {({
               handleChange,
               handleBlur,
               handleSubmit,
               setFieldError,
+              setFieldTouched,
               values,
               errors,
               touched,
             }) => {
               const handleOnBlur = (field: keyof FormValues) => async () => {
                 handleBlur(field);
+                setFieldTouched(field, true, true);
 
                 if (
                   field === 'corporationNumber' &&
@@ -69,35 +71,45 @@ const OnboardingFormScreen = () => {
                   <View style={styles.nameInputContainer}>
                     <View style={{ flex: 1 }}>
                       <TextInput
+                        id="firstName"
                         label="First Name"
                         onChangeText={handleChange('firstName')}
                         onBlur={handleOnBlur('firstName')}
                         value={values.firstName}
                         error={errors.firstName}
                         touched={touched.firstName}
+                        accessible
+                        accessibilityLabel="First Name"
                       />
                     </View>
                     <View style={{ flex: 1 }}>
                       <TextInput
+                        id="lastName"
                         label="Last Name"
                         onChangeText={handleChange('lastName')}
                         onBlur={handleOnBlur('lastName')}
                         value={values.lastName}
                         error={errors.lastName}
                         touched={touched.lastName}
+                        accessible
+                        accessibilityLabel="Last Name"
                       />
                     </View>
                   </View>
                   <TextInput
+                    id="phone"
                     label="Phone Number"
-                    onChangeText={handleChange('phoneNumber')}
-                    onBlur={handleOnBlur('phoneNumber')}
-                    value={values.phoneNumber}
-                    keyboardType="phone-pad"
-                    error={errors.phoneNumber}
-                    touched={touched.phoneNumber}
+                    onChangeText={handleChange('phone')}
+                    onBlur={handleOnBlur('phone')}
+                    value={values.phone}
+                    error={errors.phone}
+                    touched={touched.phone}
+                    aria-label="Phone Number"
+                    accessible
+                    accessibilityLabel="Phone Number"
                   />
                   <TextInput
+                    id="corporationNumber"
                     label="Corporation Number"
                     onChangeText={handleChange('corporationNumber')}
                     onBlur={handleOnBlur('corporationNumber')}
@@ -105,8 +117,15 @@ const OnboardingFormScreen = () => {
                     keyboardType="phone-pad"
                     error={errors.corporationNumber}
                     touched={touched.corporationNumber}
+                    accessible
+                    accessibilityLabel="Corporation Number"
                   />
-                  <SubmitButton label="Submit" onPress={handleSubmit} />
+                  <SubmitButton
+                    label="Submit"
+                    onPress={handleSubmit}
+                    accessible
+                    accessibilityLabel="Submit Button"
+                  />
                 </View>
               );
             }}
