@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export interface CorporationValidationResponse {
   valid: boolean;
   message?: string;
@@ -5,12 +7,17 @@ export interface CorporationValidationResponse {
 }
 
 export const useCorporationNumberValidation = () => {
+  const [isValidCorporationNumber, setIsValidCorporationNumber] =
+    useState<CorporationValidationResponse>({
+      valid: false,
+      message: '',
+    });
   const validateCorporationNumber = async (corporationNumber: string) => {
     if (!corporationNumber) {
-      return {
+      setIsValidCorporationNumber({
         valid: false,
         message: 'Corporation Number is required',
-      };
+      });
     }
 
     try {
@@ -27,14 +34,14 @@ export const useCorporationNumberValidation = () => {
       const corporationDataResponse: CorporationValidationResponse =
         await response.json();
 
-      return corporationDataResponse;
+      setIsValidCorporationNumber(corporationDataResponse);
     } catch (err) {
-      return {
+      setIsValidCorporationNumber({
         valid: false,
         message: 'Error validating corporation number',
-      };
+      });
     }
   };
 
-  return { validateCorporationNumber };
+  return { validateCorporationNumber, isValidCorporationNumber };
 };
