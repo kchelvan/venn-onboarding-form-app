@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
@@ -14,7 +14,8 @@ import {
 import { useOnboardingSubmit } from '../../hooks/useOnboardingSubmit';
 
 const OnboardingFormScreen = () => {
-  const { validateCorporationNumber } = useCorporationNumberValidation();
+  const { validateCorporationNumber, isValidCorporationNumber } =
+    useCorporationNumberValidation();
   const { onSubmitHandler } = useOnboardingSubmit();
   const initialValues: FormValues = {
     firstName: '',
@@ -38,33 +39,28 @@ const OnboardingFormScreen = () => {
           >
             {({
               handleChange,
-              handleBlur,
               handleSubmit,
               setFieldError,
-              setFieldTouched,
+              validateField,
               values,
               errors,
-              touched,
             }) => {
               const handleOnBlur = (field: keyof FormValues) => async () => {
-                handleBlur(field);
-                setFieldTouched(field, true, true);
+                validateField(field);
 
-                if (
-                  field === 'corporationNumber' &&
-                  !errors.corporationNumber
-                ) {
-                  const corporationDataResponse: CorporationValidationResponse =
-                    await validateCorporationNumber(values.corporationNumber);
-
-                  if (!corporationDataResponse?.valid) {
-                    setFieldError(
-                      'corporationNumber',
-                      corporationDataResponse.message,
-                    );
-                  }
+                if (field === 'corporationNumber') {
+                  await validateCorporationNumber(values.corporationNumber);
                 }
               };
+
+              useEffect(() => {
+                if (!errors.corporationNumber) {
+                  setFieldError(
+                    'corporationNumber',
+                    isValidCorporationNumber.message,
+                  );
+                }
+              }, [isValidCorporationNumber]);
 
               return (
                 <View>
@@ -77,7 +73,6 @@ const OnboardingFormScreen = () => {
                         onBlur={handleOnBlur('firstName')}
                         value={values.firstName}
                         error={errors.firstName}
-                        touched={touched.firstName}
                         accessible
                         accessibilityLabel="First Name"
                       />
@@ -90,7 +85,6 @@ const OnboardingFormScreen = () => {
                         onBlur={handleOnBlur('lastName')}
                         value={values.lastName}
                         error={errors.lastName}
-                        touched={touched.lastName}
                         accessible
                         accessibilityLabel="Last Name"
                       />
@@ -103,7 +97,6 @@ const OnboardingFormScreen = () => {
                     onBlur={handleOnBlur('phone')}
                     value={values.phone}
                     error={errors.phone}
-                    touched={touched.phone}
                     aria-label="Phone Number"
                     accessible
                     accessibilityLabel="Phone Number"
@@ -115,8 +108,10 @@ const OnboardingFormScreen = () => {
                     onBlur={handleOnBlur('corporationNumber')}
                     value={values.corporationNumber}
                     keyboardType="phone-pad"
-                    error={errors.corporationNumber}
-                    touched={touched.corporationNumber}
+                    error={
+                      errors.corporationNumber ||
+                      isValidCorporationNumber.message
+                    }
                     accessible
                     accessibilityLabel="Corporation Number"
                   />
