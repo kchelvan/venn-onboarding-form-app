@@ -121,7 +121,7 @@ const OnboardingFormScreen = () => {
                     accessibilityLabel="Corporation Number"
                   />
                   <SubmitButton
-                    label="Submit"
+                    label="Submit →"
                     onPress={handleSubmit}
                     accessible
                     accessibilityLabel="Submit Button"
