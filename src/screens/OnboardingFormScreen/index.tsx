@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Formik, FormikHelpers } from 'formik';
+import { Formik } from 'formik';
 import { validationSchema } from '../../utils/validationSchema';
 import styles from './styles';
 import TextInput from '../../components/TextInput';
