@@ -17,7 +17,7 @@ export const validationSchema: Yup.ObjectSchema<FormValues> =
       ),
     corporationNumber: Yup.string()
       .required('Corporation Number is required')
-      .matches(/^\d+$/, 'Phone Number can only contain numbers')
+      .matches(/^\d+$/, 'Corporation Number can only contain numbers')
       .min(9, 'Corporation Number must be exactly 9 characters')
       .max(9, 'Corporation Number must be exactly 9 characters'),
   });
