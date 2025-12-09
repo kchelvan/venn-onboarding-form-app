@@ -1,18 +1,11 @@
-import { StatusBar, StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import OnboardingForm from './src/screens/OnboardingFormScreen';
 
 function App() {
   return (
     <SafeAreaProvider>
-      <StatusBar />
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-        <OnboardingForm />
-      </ScrollView>
+      <OnboardingForm />
     </SafeAreaProvider>
   );
 }
