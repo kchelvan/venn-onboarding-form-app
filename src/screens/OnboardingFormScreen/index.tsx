@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import { validationSchema } from '../../utils/validationSchema';
 import styles from './styles';
@@ -9,8 +9,6 @@ import SubmitButton from '../../components/Button';
 import { FormValues } from '../../utils/types';
 
 const OnboardingFormScreen = () => {
-  const insets = useSafeAreaInsets();
-
   const initialValues: FormValues = {
     firstName: '',
     lastName: '',
@@ -23,7 +21,7 @@ const OnboardingFormScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.stepIndicator}>Step 1 of 5</Text>
         <View style={styles.formContainer}>
@@ -77,7 +75,7 @@ const OnboardingFormScreen = () => {
           </Formik>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
